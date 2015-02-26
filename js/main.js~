@@ -1,349 +1,262 @@
 
-//http://wonderdeep.github.io/digital-game3/index.html
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create });
+//http://wonderdeep.github.io/digital-template/index.html
+//creates the playing screen
+var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update, render: render });
 
+function preload() {
 
-function preload () {
-    game.load.image('crimescene','assets/background.png');
-    game.load.image('gg', 'assets/gg.png');
-    game.load.image('gk', 'assets/gk.png');
-    game.load.image('gr', 'assets/gr.png');
-    game.load.image('guilla','assets/guilla.png');
-    game.load.image('kg','assets/kg.png');
-    game.load.image('kk','assets/kk.png');
-    game.load.image('knife','assets/knife.png');
-    game.load.image('kr','assets/kr.png');
-    game.load.image('living','assets/living.png');
-    game.load.image('rg','assets/rg.png');
-    game.load.image('rk','assets/rk.png');
-    game.load.image('rope','assets/rope.png'); 
-    game.load.image('rr','assets/rr.png');
-    game.load.image('welcome','assets/welcome.png');
-    game.load.image('letskill','assets/letskill.png');
-    game.load.image('csi','assets/csi.png'); 
-    game.load.image('brainwork','assets/brainwork.png');
-    game.load.image('done','assets/done.png');
-    game.load.image('firstquestion','assets/firstweapon.png');
-    game.load.image('secondquestion','assets/secondweapon.png');
-    game.load.image('wrong','assets/wrong.png'); 
-    game.load.image('correct','assets/correct.png');
-   
+    game.load.tilemap('level1', 'assets/level1.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('tiles-1', 'assets/tiles-1.png');
+    game.load.spritesheet('cat', 'assets/cat.png', 32, 48);
+    game.load.spritesheet('ghost', 'assets/ghost.png', 32, 32);
+    game.load.image('background', 'assets/background2.jpg');
+    game.load.image('bullet', 'assets/bullet.png');
+    game.load.image('portal', 'assets/Exit.png');
+    game.load.audio('music', 'assets/Rainy Summer.mp3');
+
 }
 
-var background;
-var next;
-var body;
-var sknife;
-var srope;
-var sguilla;
-var nknife;
-var nrope;
-var nguilla;
-var knife1 = false;
-var rope1 = false;
-var guilla1 = false;
-var knife2 = false;
-var rope2 = false;
-var guilla2 = false;
-var screen2;
-var udone;
-
-var iknife;
-var irope;
-var iguilla;
-var iknife2;
-var irope2;
-var iguilla2;
-
-var wrong = false;
-var question;
-var realfirst;
-var realsecond;
-
+var map;
+var tileset;
+var layer;
+var player;
+var facing = 'right';
+var jumpTimer = 0;
+var cursors;
+var bg;
+var bullets;
+var nextFire = 0;
+var fireRate = 100;
+var spawnTimer = 0;
+var ghost;
+var stateText;
+var portal;
+var music;
 
 function create() {
 
-	//the main menu of the game
-	background = game.add.sprite(0, 0, 'welcome');
-	next = game.add.sprite(260,500, 'letskill');
-  
-	//  Enables all kind of input actions on this image (click, etc)
-  	next.inputEnabled = true;
-  	next.events.onInputDown.add(intro, this);
+    game.physics.startSystem(Phaser.Physics.ARCADE);
 
-}
+    bg = game.add.tileSprite(0, 0, 800, 600, 'background');
+    bg.fixedToCamera = true;
 
-//The first phase of the game.
-function intro () {
-	//adjustments
-	background.loadTexture('crimescene',0);
-	next.destroy();
-	
-	//additions
-	body = game.add.sprite(300,90,'living');
-	sknife = game.add.sprite(550,0,'knife');
-	sknife.inputEnabled = true;
-	srope = game.add.sprite(688,0,'rope');
-	srope.inputEnabled = true;
-	sguilla = game.add.sprite(675,116,'guilla');
-	sguilla.inputEnabled = true;
-	
-	sknife.events.onInputDown.add(firstk, this);
-	srope.events.onInputDown.add(firstr, this);
-	sguilla.events.onInputDown.add(firstg, this);
+    map = game.add.tilemap('level1');
+    map.addTilesetImage('tiles-1');
+    map.setCollisionByExclusion([ 13, 14, 15, 16, 46, 47, 48, 49, 50, 51 ]);
+    layer = map.createLayer('Tile Layer 1');
+    //Un-comment this on to see the collision tiles
+    //layer.debug = true;
+
+    layer.resizeWorld();   
+    
+    //setting up the bullet group
+    bullets = game.add.group();
+    bullets.enableBody = true;
+    bullets.physicsBodyType = Phaser.Physics.ARCADE;
+    bullets.createMultiple(30, 'bullet');
+    bullets.setAll('anchor.x', 0.5);
+    bullets.setAll('anchor.y', 1);
+    bullets.setAll('outOfBoundsKill', true);
+    bullets.setAll('checkWorldBounds', true);
+    
+    music = game.add.audio('music');
+    music.play();
+
+    //the enemies the player must face
+    ghosts = game.add.group();
+    ghosts.enableBody = true;
+    ghosts.physicsBodyType = Phaser.Physics.ARCADE;
+    ghosts.createMultiple(30, 'ghost');
+    ghosts.setAll('outOfBoundsKill', true);
+    ghosts.setAll('checkWorldBounds', true);
+    
+    //the goal or portal
+    portal = game.add.sprite(50,152, 'portal');
+    game.physics.enable(portal, Phaser.Physics.ARCADE);
+    
+    //the cat
+    player = game.add.sprite(40, 935, 'cat');
+    game.physics.enable(player, Phaser.Physics.ARCADE);
+
+    player.body.bounce.y = 0.2;
+    player.body.gravity.y = 250;
+    player.body.collideWorldBounds = true;
+    player.body.setSize(20, 32, 5, 16);
+
+    player.animations.add('left', [0, 1, 2, 3], 10, true);
+    player.animations.add('turn', [4], 20, true);
+    player.animations.add('right', [5, 6, 7, 8], 10, true);
+
+    game.camera.follow(player);
+
+    cursors = game.input.keyboard.createCursorKeys();
+    this.wasd = {
+                up: game.input.keyboard.addKey(Phaser.Keyboard.W),
+                down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+                left: game.input.keyboard.addKey(Phaser.Keyboard.A),
+                right: game.input.keyboard.addKey(Phaser.Keyboard.D),
+            };
+
 }
 ////////////////////////////////////////////////////////////////////////////////
-//the knife kills first
-function firstk () {
-	knife1 = true;
-	body.loadTexture('kk',0);
-	body.x = 320;
-	body.y = 133;
-	
-	sknife.events.onInputUp.add(killed, this);
-} 
-//the rope kills first
-function firstr () {
-	rope1 = true;
-	body.loadTexture('rr',0);
-	body.x = 320;
-	body.y = 133;
-	
-	srope.events.onInputUp.add(killed,this);
-}
-//the guillotine kills first
-function firstg () {
-	guilla1 = true;
-	body.loadTexture('gg',0);
-	body.x = 320;
-	body.y = 224;
-	
-	sguilla.events.onInputUp.add(killed,this);
-}
 ////////////////////////////////////////////////////////////////////////////////
-//player1 kills with first weapon
-function killed () {
-	sknife.kill();
-	srope.kill();
-	sguilla.kill();
-	
-	nknife = game.add.sprite(550,0,'knife');
-	nknife.inputEnabled = true;
-	nrope = game.add.sprite(688,0,'rope');
-	nrope.inputEnabled = true;
-	nguilla = game.add.sprite(675,116,'guilla');
-	nguilla.inputEnabled = true;
-	
-	nknife.events.onInputDown.add(secondk, this);
-	nrope.events.onInputDown.add(secondr, this);
-	nguilla.events.onInputDown.add(secondg, this);
+function update() {
+
+    game.physics.arcade.collide(player, layer);
+
+    player.body.velocity.x = 0;
+
+    if (game.input.activePointer.isDown)
+    {
+        fire();
+    } 
+        
+    //moves and animates the player moving left
+    if (this.wasd.left.isDown)
+    {
+        player.body.velocity.x = -150;
+
+        if (facing != 'left')
+        {
+            player.animations.play('left');
+            facing = 'left';
+        }
+    }
+    
+    //moves and animates the playermoving right
+    else if (this.wasd.right.isDown)
+    {
+        player.body.velocity.x = 150;
+
+        if (facing != 'right')
+        {
+            player.animations.play('right');
+            facing = 'right';
+        }
+    }
+    else
+    {
+    	//halts animation and stops movement when idle
+        if (facing != 'idle')
+        {
+            player.animations.stop();
+
+            if (facing == 'left')
+            {
+                player.frame = 0;
+            }
+            else
+            {
+                player.frame = 5;
+            }
+
+            facing = 'idle';
+        }
+    }
+    
+    if (game.time.now > spawnTimer)
+    {
+         ghost = ghosts.getFirstExists(false);
+         ghost.reset(988, game.rnd.integerInRange(100,800), 'ghost');
+         game.physics.arcade.moveToObject(ghost,player,120);
+         //ghosts.forEachAlive(moveGhost, this);
+         spawnTimer = game.time.now + 2000;
+    }
+    
+    //makes the sprite jump, but only if the player in touching the ground
+    if (this.wasd.up.isDown && player.body.onFloor() && game.time.now > jumpTimer)
+    {
+        player.body.velocity.y = -250;
+        jumpTimer = game.time.now + 750;
+    }
+    
+    //collision handling
+    game.physics.arcade.overlap(bullets, ghosts, collisionHandler, null, this);
+    game.physics.arcade.overlap(bullets, layer, killBullet, null, this);
+    game.physics.arcade.overlap(player, portal, winning, null, this);
+    game.physics.arcade.overlap(ghosts, player, catCaught, null, this);
+
 }
-///////////////////////////////////////////////////////////////////////////////
-//the knife is used second
-function secondk () {
-	knife2 = true;
-	if(knife1)
-	{
-		body.loadTexture('kk',0);
-	}
-	if(rope1)
-	{
-		body.loadTexture('rk',0);
-	}
-	if(guilla1)
-	{
-		body.loadTexture('gk',0);
-	}
-	
-	nknife.events.onInputUp.add(hide,this);
+
+function moveGhost (ghosts) { 
+     accelerateToObject(ghosts,player,30);  //start accelerateToObject on every ghost
+}
+
+function accelerateToObject(obj1, obj2, speed) {
+    if (typeof speed === 'undefined') { speed = 60; }
+    var angle = Math.atan2(obj2.y - obj1.y, obj2.x - obj1.x);
+    obj1.body.rotation = angle + game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
+    obj1.body.force.x = Math.cos(angle) * speed;    // accelerateToObject 
+    obj1.body.force.y = Math.sin(angle) * speed;
+}
+
+//enables the player to fire bullets towards the mouse's location
+function fire() {
+
+    if (game.time.now > nextFire && bullets.countDead() > 0)
+    {
+        nextFire = game.time.now + fireRate;
+
+        var bullet = bullets.getFirstDead();
+        //where to spawn the bullet
+        bullet.reset(player.x+24, player.y+32);
+
+        game.physics.arcade.moveToPointer(bullet, 300);
+    }
+
 } 
-//the rope is used second
-function secondr () {
-	rope2 = true;
-	if(knife1)
-	{
-		body.loadTexture('kr',0);
-	}
-	if(rope1)
-	{
-		body.loadTexture('rr',0);
-	}
-	if(guilla1)
-	{
-		body.loadTexture('gr',0);
-	}
+function render () {
 
-	
-	nrope.events.onInputUp.add(hide,this);
-}
-//the guillotine is used second
-function secondg () {
-	guilla2 = true;
-	body.x = 320;
-	body.y = 224;
-	if(knife1===true)
-	{
-		body.loadTexture('kg',0);
-	}
-	if(rope1===true)
-	{
-		body.loadTexture('rg',0);
-	}
-	if(guilla1===true)
-	{
-		body.loadTexture('gg',0);
-	}
-	
-	nguilla.events.onInputUp.add(hide,this);
-}
-////////////////////////////////////////////////////////////////////////////////
-//player1 uses second weapon as distraction
-function hide () {
-	nknife.inputEnabled = false;
-	nrope.inputEnabled = false;
-	nguilla.inputEnabled = false;
-	
-	udone = game.add.sprite(500,400, 'done');
-  
-	//  Enables all kind of input actions on this image (click, etc)
-  	udone.inputEnabled = true;	
-	udone.events.onInputUp.add(nextplayer, this);
+    // game.debug.text(game.time.physicsElapsed, 32, 32);
+    // game.debug.body(player);
+     //game.debug.bodyInfo(player, 16, 24);
+
 }
 
-function nextplayer () {
-	udone.destroy();
-	screen2 = game.add.sprite(0,0,'csi');
-	next = game.add.sprite(260,500, 'brainwork');
-	next.x = 260;
-	next.y = 500;
-  
-	//  Enables all kind of input actions on this image (click, etc)
-	next.inputEnabled = true;	
-	next.events.onInputDown.add(investigate, this);
+//you lose
+function catCaught (player, ghost)
+{
+	player.kill();
+	ghosts.callAll('kill');
+
+	        //Text
+	stateText = game.add.text(player.x,player.y,' ', { font: '20px Arial', fill: '#fff' });
+        stateText.anchor.setTo(0.5, 0.5);
+	stateText.text=" You were Caught! \n Click to try again.";
+        stateText.visible = true;
+
+        //the "click to restart" handler
+        game.input.onTap.addOnce(restart,this);
+}
+//you win
+function winning (player, portal)
+{
+	player.kill();
+	
+	stateText = game.add.text(player.x+100,player.y,' ', { font: '20px Arial', fill: '#fff' });
+        stateText.anchor.setTo(0.5, 0.5);
+	stateText.text="You made it to the portal! \n Who is on the other side I wonder? \n To Be Continued. \n Click to play again!";
+        stateText.visible = true;
 }
 
-//player2 chooses which weapons were used and in what order
-// (or just which one actually did the killing)
-function investigate () {
-	screen2.destroy();
-	next.destroy();
-	
-	nknife.kill();
-	nrope.kill();
-	nguilla.kill();
-	
-	question = game.add.sprite(150,60,'firstquestion');
-	
-	iknife = game.add.sprite(550,0,'knife');
-	iknife.inputEnabled = true;
-	irope = game.add.sprite(688,0,'rope');
-	irope.inputEnabled = true;
-	iguilla = game.add.sprite(675,116,'guilla');
-	iguilla.inputEnabled = true;
-	
-	iknife.events.onInputDown.add(guessknife1, this);
-	irope.events.onInputDown.add(guessrope1, this);
-	iguilla.events.onInputDown.add(guessguilla1, this);
-} 
-
-function guessknife1 () {
-	if (knife1!==true)
-	{
-		wrong = true;
-	}
-	
-	iknife.events.onInputUp.add(investigate2, this);	
+//if a bullet hits the platforms, it's stopped
+function killBullet (bullet, layer)
+{
+	bullet.kill();
 }
 
-function guessrope1 () {
-	if (rope1!==true)
-	{
-		wrong = true;
-	}
-	
-	irope.events.onInputUp.add(investigate2, this);	
+//if a bullet hits a ghost, both die
+function collisionHandler (bullet, ghost) {
+
+    //  When a bullet hits an alien we kill them both
+    bullet.kill();
+    ghost.kill();
+
 }
 
-function guessguilla1 () {
-	if (guilla1!==true)
-	{
-		wrong = true;
-	}
-	
-	iguilla.events.onInputUp.add(investigate2, this);
-	
-}
-
-function investigate2 () {
-	iknife.kill();
-	irope.kill();
-	iguilla.kill();
-	
-	question.loadTexture('secondquestion',0);
-	
-	iknife2 = game.add.sprite(550,0,'knife');
-	iknife2.inputEnabled = true;
-	irope2 = game.add.sprite(688,0,'rope');
-	irope2.inputEnabled = true;
-	iguilla2 = game.add.sprite(675,116,'guilla');
-	iguilla2.inputEnabled = true;
-	
-	iknife2.events.onInputDown.add(guessknife2, this);
-	irope2.events.onInputDown.add(guessrope2, this);
-	iguilla2.events.onInputDown.add(guessguilla2, this);
-	 
-}
-
-function guessknife2 () {
-	if (knife2!==true)
-	{
-		wrong = true;
-	}
-	
-	iknife2.events.onInputUp.add(conclusion, this);	
-}
-
-function guessrope2 () {
-	if (rope2!==true)
-	{
-		wrong = true;
-	}
-	
-	irope2.events.onInputUp.add(conclusion, this);	
-}
-
-function guessguilla2 () {
-	if (guilla2!==true)
-	{
-		wrong = true;
-	}
-	
-	iguilla2.events.onInputUp.add(conclusion, this);
-	
-}
-//we determine whether the investigator or the murderer won
-function conclusion () {
-	question.kill();
-	body.kill();
-	iknife2.kill();
-	irope2.kill();
-	iguilla2.kill();
-	
-	if(wrong)
-	{
-		background.loadTexture('wrong',0);
-		if(knife1) { realfirst = game.add.sprite(300,230,'knife'); }
-		if(rope1) { realfirst = game.add.sprite(300,230,'rope'); }
-		if(guilla1) { realfirst = game.add.sprite(300,230,'guilla'); }
-		if(knife2) { realsecond = game.add.sprite(300,375,'knife'); }
-		if(rope2) { realsecond = game.add.sprite(300,375,'rope'); }
-		if(guilla2) { realsecond = game.add.sprite(300,375,'guilla'); }
-		
-	}
-	else
-	{
-		background.loadTexture('correct',0);
-	}
-	
+function restart ()
+{
+	player.reset(40, 935);
+	stateText.visible = false;
 }
 
