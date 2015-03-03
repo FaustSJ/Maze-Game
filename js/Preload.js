@@ -12,12 +12,11 @@ TopDownGame.Preload.prototype = {
     this.load.setPreloadSprite(this.preloadBar);
 
     //load game assets
-    this.load.tilemap('level1', 'assets/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.image('gameTiles', 'assets/images/tiles-1.png');
-    this.load.image('greencup', 'assets/images/greencup.png');
-    this.load.image('bluecup', 'assets/images/bluecup.png');
-    this.load.image('player', 'assets/images/invader.png');
-    this.load.image('browndoor', 'assets/images/browndoor.png');
+    this.load.tilemap('level1', 'assets/level2.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.image('gameTiles', 'assets/tiles-1.png');
+    this.load.image('greencup', 'assets/whitecell.png');
+    this.load.image('player', 'assets/invader.png');
+    this.load.image('browndoor', 'assets/browndoor.png');
     
   },
   create: function() {

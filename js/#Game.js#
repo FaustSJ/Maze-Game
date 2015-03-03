@@ -19,7 +19,8 @@ TopDownGame.Game.prototype =
     //resizes the game world to match the layer dimensions
     this.backgroundlayer.resizeWorld();
     
-    this.createItems();
+    this.createEnemyx();
+    this.createEnemyy();
     this.createDoors(); 
     
     //create player
@@ -34,16 +35,29 @@ TopDownGame.Game.prototype =
     
   },
 /*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/  
-  createItems: function() 
+  createEnemyx: function() 
   {
     //create items
-    this.items = this.game.add.group();
-    this.items.enableBody = true;
-    var item;    
-    result = this.findObjectsByType('item', this.map, 'objectsLayer');
+    this.enemyx = this.game.add.group();
+    this.enemyx.enableBody = true;
+    var enemyx;    
+    result = this.findObjectsByType('Enemyx', this.map, 'objectsLayer');
     result.forEach(function(element)
     	    {
-    	    	    this.createFromTiledObject(element, this.items);
+    	    	    this.createFromTiledObject(element, this.enemyx);
+            },	
+    this);
+  },
+  createEnemyx: function() 
+  {
+    //create items
+    this.enemyy = this.game.add.group();
+    this.enemyy.enableBody = true;
+    var enemyy;    
+    result = this.findObjectsByType('Enemyy', this.map, 'objectsLayer');
+    result.forEach(function(element)
+    	    {
+    	    	    this.createFromTiledObject(element, this.enemyy);
             },	
     this);
   },

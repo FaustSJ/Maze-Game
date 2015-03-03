@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="48" height="128" tilewidth="16" tileheight="16" nextobjectid="94">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="48" height="128" tilewidth="16" tileheight="16" nextobjectid="98">
  <tileset firstgid="1" name="tiles-1" tilewidth="16" tileheight="16">
   <image source="tiles-1.png" width="272" height="64"/>
   <terraintypes>
@@ -170,7 +170,6 @@
   <object id="33" name="y1420to1317" type="Enemyy" gid="63" x="84" y="1420"/>
   <object id="34" name="x279to435" type="Enemyx" gid="63" x="279" y="1594"/>
   <object id="36" name="x486to395" type="Enemyx" gid="63" x="486" y="1847"/>
-  <object id="37" name="goal" type="exit" gid="47" x="382" y="2027"/>
   <object id="38" name="x298to461" type="Enemyx" gid="63" x="298" y="1982"/>
   <object id="39" name="x296to377" type="Enemyx" gid="63" x="296" y="1913"/>
   <object id="40" name="y1835to1720" type="Enemyy" gid="63" x="329" y="1835"/>
@@ -182,5 +181,6 @@
   <object id="47" name="y665to436" type="Enemyy" gid="63" x="72" y="665"/>
   <object id="48" name="x205to343" type="Enemyx" gid="63" x="205" y="573"/>
   <object id="89" name="y682to615" type="Enemyy" gid="63" x="475" y="682"/>
+  <object id="97" name="exit" type="door" gid="28" x="365" y="2005"/>
  </objectgroup>
 </map>

@@ -476,22 +476,6 @@
                  "y":1847
                 }, 
                 {
-                 "gid":47,
-                 "height":0,
-                 "id":37,
-                 "name":"goal",
-                 "properties":
-                    {
-
-                    },
-                 "rotation":0,
-                 "type":"exit",
-                 "visible":true,
-                 "width":0,
-                 "x":382,
-                 "y":2027
-                }, 
-                {
                  "gid":63,
                  "height":0,
                  "id":38,
@@ -666,6 +650,22 @@
                  "width":0,
                  "x":475,
                  "y":682
+                }, 
+                {
+                 "gid":28,
+                 "height":0,
+                 "id":97,
+                 "name":"exit",
+                 "properties":
+                    {
+
+                    },
+                 "rotation":0,
+                 "type":"door",
+                 "visible":true,
+                 "width":0,
+                 "x":365,
+                 "y":2005
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -674,7 +674,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":94,
+ "nextobjectid":98,
  "orientation":"orthogonal",
  "properties":
     {
