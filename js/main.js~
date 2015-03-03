@@ -1,18 +1,15 @@
 
 //http://wonderdeep.github.io/digital-template/index.html
 //creates the playing screen
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(768, 2048, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
 
     game.load.tilemap('level1', 'assets/level1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tiles-1', 'assets/tiles-1.png');
     game.load.spritesheet('cat', 'assets/cat.png', 32, 48);
-    game.load.spritesheet('ghost', 'assets/ghost.png', 32, 32);
-    game.load.image('background', 'assets/background2.jpg');
-    game.load.image('bullet', 'assets/bullet.png');
+    game.load.image('background', 'assets/levelBack.png');
     game.load.image('portal', 'assets/Exit.png');
-    game.load.audio('music', 'assets/Rainy Summer.mp3');
 
 }
 
@@ -24,24 +21,20 @@ var facing = 'right';
 var jumpTimer = 0;
 var cursors;
 var bg;
-var bullets;
-var nextFire = 0;
-var fireRate = 100;
 var spawnTimer = 0;
-var ghost;
 var stateText;
 var portal;
-var music;
+
 
 function create() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    bg = game.add.tileSprite(0, 0, 800, 600, 'background');
-    bg.fixedToCamera = true;
+    bg = game.add.sprite(0, 0,'background');
+    bg.fixedToCamera = false;
 
     map = game.add.tilemap('level1');
-    map.addTilesetImage('tiles-1');
+    map.addTilesetImage('main','tiles-1');
     map.setCollisionByExclusion([ 13, 14, 15, 16, 46, 47, 48, 49, 50, 51 ]);
     layer = map.createLayer('Tile Layer 1');
     //Un-comment this on to see the collision tiles
@@ -49,33 +42,12 @@ function create() {
 
     layer.resizeWorld();   
     
-    //setting up the bullet group
-    bullets = game.add.group();
-    bullets.enableBody = true;
-    bullets.physicsBodyType = Phaser.Physics.ARCADE;
-    bullets.createMultiple(30, 'bullet');
-    bullets.setAll('anchor.x', 0.5);
-    bullets.setAll('anchor.y', 1);
-    bullets.setAll('outOfBoundsKill', true);
-    bullets.setAll('checkWorldBounds', true);
-    
-    music = game.add.audio('music');
-    music.play();
-
-    //the enemies the player must face
-    ghosts = game.add.group();
-    ghosts.enableBody = true;
-    ghosts.physicsBodyType = Phaser.Physics.ARCADE;
-    ghosts.createMultiple(30, 'ghost');
-    ghosts.setAll('outOfBoundsKill', true);
-    ghosts.setAll('checkWorldBounds', true);
-    
     //the goal or portal
     portal = game.add.sprite(50,152, 'portal');
     game.physics.enable(portal, Phaser.Physics.ARCADE);
     
     //the cat
-    player = game.add.sprite(40, 935, 'cat');
+    player = game.add.sprite(394, 10, 'cat');
     game.physics.enable(player, Phaser.Physics.ARCADE);
 
     player.body.bounce.y = 0.2;
@@ -154,15 +126,6 @@ function update() {
         }
     }
     
-    if (game.time.now > spawnTimer)
-    {
-         ghost = ghosts.getFirstExists(false);
-         ghost.reset(988, game.rnd.integerInRange(100,800), 'ghost');
-         game.physics.arcade.moveToObject(ghost,player,120);
-         //ghosts.forEachAlive(moveGhost, this);
-         spawnTimer = game.time.now + 2000;
-    }
-    
     //makes the sprite jump, but only if the player in touching the ground
     if (this.wasd.up.isDown && player.body.onFloor() && game.time.now > jumpTimer)
     {
@@ -170,11 +133,7 @@ function update() {
         jumpTimer = game.time.now + 750;
     }
     
-    //collision handling
-    game.physics.arcade.overlap(bullets, ghosts, collisionHandler, null, this);
-    game.physics.arcade.overlap(bullets, layer, killBullet, null, this);
     game.physics.arcade.overlap(player, portal, winning, null, this);
-    game.physics.arcade.overlap(ghosts, player, catCaught, null, this);
 
 }
 
@@ -182,52 +141,15 @@ function moveGhost (ghosts) {
      accelerateToObject(ghosts,player,30);  //start accelerateToObject on every ghost
 }
 
-function accelerateToObject(obj1, obj2, speed) {
-    if (typeof speed === 'undefined') { speed = 60; }
-    var angle = Math.atan2(obj2.y - obj1.y, obj2.x - obj1.x);
-    obj1.body.rotation = angle + game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
-    obj1.body.force.x = Math.cos(angle) * speed;    // accelerateToObject 
-    obj1.body.force.y = Math.sin(angle) * speed;
-}
 
-//enables the player to fire bullets towards the mouse's location
-function fire() {
-
-    if (game.time.now > nextFire && bullets.countDead() > 0)
-    {
-        nextFire = game.time.now + fireRate;
-
-        var bullet = bullets.getFirstDead();
-        //where to spawn the bullet
-        bullet.reset(player.x+24, player.y+32);
-
-        game.physics.arcade.moveToPointer(bullet, 300);
-    }
-
-} 
 function render () {
 
     // game.debug.text(game.time.physicsElapsed, 32, 32);
     // game.debug.body(player);
-     //game.debug.bodyInfo(player, 16, 24);
+     game.debug.bodyInfo(player, 16, 24);
 
 }
 
-//you lose
-function catCaught (player, ghost)
-{
-	player.kill();
-	ghosts.callAll('kill');
-
-	        //Text
-	stateText = game.add.text(player.x,player.y,' ', { font: '20px Arial', fill: '#fff' });
-        stateText.anchor.setTo(0.5, 0.5);
-	stateText.text=" You were Caught! \n Click to try again.";
-        stateText.visible = true;
-
-        //the "click to restart" handler
-        game.input.onTap.addOnce(restart,this);
-}
 //you win
 function winning (player, portal)
 {
@@ -237,21 +159,6 @@ function winning (player, portal)
         stateText.anchor.setTo(0.5, 0.5);
 	stateText.text="You made it to the portal! \n Who is on the other side I wonder? \n To Be Continued. \n Click to play again!";
         stateText.visible = true;
-}
-
-//if a bullet hits the platforms, it's stopped
-function killBullet (bullet, layer)
-{
-	bullet.kill();
-}
-
-//if a bullet hits a ghost, both die
-function collisionHandler (bullet, ghost) {
-
-    //  When a bullet hits an alien we kill them both
-    bullet.kill();
-    ghost.kill();
-
 }
 
 function restart ()
