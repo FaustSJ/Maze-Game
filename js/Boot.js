@@ -3,8 +3,10 @@ var TopDownGame = TopDownGame || {};
 TopDownGame.Boot = function(){};
 
 //setting game configuration and loading the assets for the loading screen
-TopDownGame.Boot.prototype = {
-  preload: function() {
+TopDownGame.Boot.prototype = 
+{
+  preload: function() 
+  {
     //assets we'll use in the loading screen
     this.load.image('preloadbar', 'assets/images/preloader-bar.png');
   },
@@ -28,3 +30,4 @@ TopDownGame.Boot.prototype = {
     this.state.start('Preload');
   }
 };
+

@@ -10,7 +10,7 @@ TopDownGame.Game.prototype =
   {
     this.map = this.game.add.tilemap('level1');
     //the first parameter is the tileset name as specified in Tiled, the second is the key to the asset
-    this.map.addTilesetImage('tiles', 'gameTiles');
+    this.map.addTilesetImage('tiles', 'tiles-1');
     //create layer
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
     this.blockedLayer = this.map.createLayer('blockedLayer');
@@ -19,7 +19,8 @@ TopDownGame.Game.prototype =
     //resizes the game world to match the layer dimensions
     this.backgroundlayer.resizeWorld();
     
-    this.createItems();
+    this.createEnemyx();
+    this.createEnemyy();
     this.createDoors(); 
     
     //create player
@@ -34,16 +35,29 @@ TopDownGame.Game.prototype =
     
   },
 /*&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&*/  
-  createItems: function() 
+  createEnemyx: function() 
   {
     //create items
-    this.items = this.game.add.group();
-    this.items.enableBody = true;
-    var item;    
-    result = this.findObjectsByType('item', this.map, 'objectsLayer');
+    this.enemyx = this.game.add.group();
+    this.enemyx.enableBody = true;
+    var enemyx;    
+    result = this.findObjectsByType('Enemyx', this.map, 'objectsLayer');
     result.forEach(function(element)
     	    {
-    	    	    this.createFromTiledObject(element, this.items);
+    	    	    this.createFromTiledObject(element, this.enemyx);
+            },	
+    this);
+  },
+  createEnemyx: function() 
+  {
+    //create items
+    this.enemyy = this.game.add.group();
+    this.enemyy.enableBody = true;
+    var enemyy;    
+    result = this.findObjectsByType('Enemyy', this.map, 'objectsLayer');
+    result.forEach(function(element)
+    	    {
+    	    	    this.createFromTiledObject(element, this.enemyy);
             },	
     this);
   },
@@ -132,7 +146,7 @@ TopDownGame.Game.prototype =
   {
     console.log('entering door that will take you to '+door.targetTilemap+' on x:'+door.targetX+' and y:'+door.targetY);
   },
-}
+};
 
 
 
