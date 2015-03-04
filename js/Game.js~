@@ -12,6 +12,7 @@ TopDownGame.Game.prototype =
     //the first parameter is the tileset name as specified in Tiled, the second is the key to the asset
     this.map.addTilesetImage('tiles', 'tiles-1');
     //create layer
+    var backgroundlayer;
     this.backgroundlayer = this.map.createLayer('backgroundLayer');
     this.blockedLayer = this.map.createLayer('blockedLayer');
     //collision on blockedLayer
