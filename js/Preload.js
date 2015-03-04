@@ -26,16 +26,4 @@ TopDownGame.Preload.prototype =
   }
   };
 
-/*
-        {
-         "height":128,
-         "image":"levelBack.png",
-         "name":"Background",
-         "opacity":1,
-         "type":"imagelayer",
-         "visible":true,
-         "width":48,
-         "x":0,
-         "y":0
-        }, 
-*/
+
