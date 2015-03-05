@@ -17,7 +17,9 @@ TopDownGame.Game.prototype =
     //collision on blockedLayer
     this.map.setCollisionBetween(1, 100, true, 'blockedLayer');
     //resizes the game world to match the layer dimensions
-    this.backgroundlayer.resizeWorld();
+    this.blockedLayer.resizeWorld();
+    
+    this.blockedLayer.debug = true;
     
     this.createEnemyx();
     this.createEnemyy();
@@ -48,7 +50,7 @@ TopDownGame.Game.prototype =
             },	
     this);
   },
-  createEnemyx: function() 
+  createEnemyy: function() 
   {
     //create items
     this.enemyy = this.game.add.group();
