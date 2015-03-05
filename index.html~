@@ -1,15 +1,10 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-	<meta charset="utf-8" />
-	<title>Learn Game Development at ZENVA.com</title>
-
-	<script src="js/phaser.js"></script>
-	<script src="js/Boot.js"></script>
-	<script src="js/Preload.js"></script>
-	<script src="js/Game.js"></script>
-	<script src="js/main.js"></script>
+    <meta charset="utf-8">
+    <title>Hello! Wow!</title>
+    <script src="js/phaser.js"></script>
+    <script src="js/main.js"></script>
 
 <style>
 body
@@ -27,67 +22,75 @@ body
 <body>
 <div id="game"></div>
 <div id="readme">
-<h2>Polite Parasite!</h2>
+<h2>CatScape</h2>
 <ul>
 
-<li><strong>Use the arrow keys to move around!</strong> </li>
+<li><strong>Use w,s,a,d to move and click to shoot!</strong> </li>
 <li></li>
 
 <li><strong>High Concept:</strong>
-Navigate the maze while avoiding white blood cells.
+You are a dead cat trying to ecsape from the land of the dead.
 </li>
 
 <li><strong>Player Experience Goals:</strong>
-I want the player to feel frustration or determination.
+I want player to experience a little bit of suspense. Maybe some frustration.
 </li>
 
 <li><strong>Genre:</strong>
-Arcade puzzle game!
+This game is a platform shooter.
 </li>
 
 <li><strong>Game play:</strong>
-Use the arrow keys to move around the maze. Avoid the white blood cells.
+Use a and d to move, w to jump, and click to shoot. 
 </li>
 
 <li><strong>Prototype goal:</strong>
-I'm trying to figure out how to make tile games using the Tiled program.
+I'm just trying to figure out how to use GitHub and Phaser.
 </li>
 
 <li><strong>Features:</strong>
-A maze of the human anatomy!
+This game features a sort-of unique story. The gameplay is pretty basic, though.
 </li>
 
 <li><strong>Setting/Premise:</strong>
-You are a parasite inside of a human body.
+You are a dead cat that is trying to escape from the land of the dead.
 </li>
 
 <li><strong>Story:</strong>
-You are a parasite that craves the innerds of reptiles. Unfortunately, the one
-that consummed you is not a reptile. You have no interest in harming this human, 
-though the human's defense system doesn't agree. Starting from the asophogus,
-you must safely navigate to the pelvis to be free of your human victum.
+You are a dead cat. Since your death 40 years ago, your soul had no existance for
+souls can only exist in the memories of the living. In other words, you died alone
+and forgotten. However, you suddenly find yourself in the land of the dead, where
+the souls of the remembered roam. Who possibly could have you in their memory? 
+Unfortunately, cats aren't supposed to be in the land of the dead, for unknown reasons. 
+The ghostly guards want you out and you agree with them. You want to find whoever
+has remembered you, and your only chance is to visit the land of the living.
+Luckily, there's a portal nearby for you to escape in!
 </li>
 
 <li><strong>Target Audience:</strong>
-People who like puzzle games.
+People into dark, story-heavy indie games.
 </li>
 
 <li><strong>Play time:</strong>
-Perhaps two or three minutes.
+About two minutes.
 </li>
 
 <li><strong>Strategies:</strong>
-The standard maze strategies apply here. If you hit a dead end, go back to your
-last cross-path and take another path.
+It is best if the player uses an actual mouse rather than a touch pad!
+Also, watch how you jump because you can't control how you fall.
 </li>
 
 <li><strong>Prototype Assets:</strong>
-background:http://www.thaidentist.org/human-body-anatomy-model/human-body-anatomy-model/
- PlayerSprite and Portal: from phaser examples
+Player Sprite made from scratch.
+Music: 'Rainy Summer' by FishandChip
+Portal Sprite: http://media.indiedb.com/images/games/1/31/30993/Exit.png
+Ghost Sprite: https://d13yacurqjgara.cloudfront.net/users/375867/screenshots/1482240/skull-game-enemy-sprite-sheet-game-asset-sidescroller-character-animation_teaser.png
+Background Image: http://www.hdwallpapers.in/candle_lights-wallpapers.html
+Tilemap and tiles built off of the ones in starstruck: https://github.com/photonstorm/phaser-examples/tree/master/examples/assets/games/starstruck
 </li>
 
 <li><strong>Prototype Closest Other Game:</strong>
-Any other maze game.
+I borrowed from the Phaser games Starstruck and Invadors.
 </li>
 
 </ul>
