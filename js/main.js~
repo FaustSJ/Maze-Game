@@ -1,10 +1,174 @@
-var TopDownGame = TopDownGame || {};
+var game = new Phaser.Game(300, 300, Phaser.CANVAS, 'game', { preload: preload, create: create, update: update, render: render });
 
-TopDownGame.game = new Phaser.Game(400, 400, Phaser.AUTO, 'game');
+function preload() {
+	game.load.tilemap('level2', 'assets/tilemaps/level2.json', null, Phaser.Tilemap.TILED_JSON);
+	game.load.image('tiles-1', 'assets/images/tiles-1.png');
+	game.load.image('enemy', 'assets/images/whitecell.png');
+	game.load.image('player', 'assets/images/invader.png');
+	game.load.image('portal', 'assets/images/Exit.png');
+	game.load.image('bg','assets/images/levelBack.png');
+}
 
-TopDownGame.game.state.add('Boot', TopDownGame.Boot);
-TopDownGame.game.state.add('Preload', TopDownGame.Preload);
-TopDownGame.game.state.add('Game', TopDownGame.Game);
+var map;
+var tileset;
+var background;
+var layer;
+var player;
+var enemyX;
+var enemyY;
 
-TopDownGame.game.state.start('Boot');
+function create() {
+	game.physics.startSystem(Phaser.Physics.ARCADE);
+	
+	background = game.add.sprite(0,0,'bg');
+	
+	map = game.add.tilemap('level2');
+	map.addTilesetImage('tiles-1', 'tiles-1');
+	layer = map.createLayer('blockedLayer');
+	map.setCollisionBetween(1,100,true, 'blockedLayer');
+	layer.resizeWorld();
+	
+	enemyX = game.add.group();
+	enemyX.enableBody = true;
+	enemyX.physicsBodyType = Phaser.Physics.ARCADE;
+	enemyX.createMultiple(28, 'enemy');
+	
+	
+	enemyY = game.add.group();
+	enemyY.enableBody = true;
+	enemyY.physicsBodyType = Phaser.Physics.ARCADE;
+	enemyY.createMultiple(10, 'enemy');
+
+	//create player
+	player = game.add.sprite(333, 48, 'player');
+	game.physics.arcade.enable(player);
+	//the camera will follow the player in the world
+	game.camera.follow(player);
+	//move player with cursor keys
+	cursors = game.input.keyboard.createCursorKeys();
+	
+}
+
+function update() {
+	
+	//player movement
+	player.body.velocity.y = 0;
+	player.body.velocity.x = 50;
+
+	if(cursors.up.isDown) 
+	{
+		player.body.velocity.y -= 50;
+	}
+	else if(cursors.down.isDown) 
+	{
+		player.body.velocity.y += 50;
+	}
+	if(cursors.left.isDown) 
+	{
+		player.body.velocity.x -= 50;
+	}
+	else if(cursors.right.isDown) 
+	{
+		player.body.velocity.x += 50;
+	}
+	
+	game.physics.arcade.overlap(player, layer, testinglol, null, this);
+/*	game.physics.arcade.overlap(enemyX, layer, xSwitch, null, this);
+	game.physics.arcade.overlap(enemyY, layer, ySwitch, null, this);
+	game.physics.arcade.overlap(player, portal, winning, null, this);
+	game.physics.arcade.overlap(enemyX, player, youreCaught, null, this);
+	game.physics.arcade.overlap(enemyY, player, youreCaught, null, this);
+*/
+}
+
+function testinglol(player)
+{
+	player.body.velocity.x = 0 - player.body.velocity.x;
+}
+
+//these functions create the enemeies that will only move in direction x or y
+function xCreater() {
+/*
+X:
+	133,489
+	457,1722
+	131, 1845
+	22, 1514
+	729, 1302
+	485, 1528
+	610, 1638
+	215, 1769
+	27, 1050
+	249, 762
+	125, 337
+	441, 395
+	187, 455
+	439, 1017
+	502, 854
+	730, 568
+	23, 936
+	442, 1139
+	279, 1594
+	486, 1847
+	298, 1982
+	296, 1913
+	36, 1662
+	327, 1528
+	552, 1415
+	187, 662
+	518, 454
+	205, 573
+*/
+}
+
+function yCreater() {
+/*	
+	
+Y:
+	265, 1496
+	402, 1191
+	19, 647
+	442, 523
+	719, 1188
+	262, 1156
+	84, 1420
+	329, 1835
+	72, 665
+	475, 682
+	
+*/
+}
+
+//when an enemy encounters the collisionlayer, their direction is switched.
+// The causes the enemies to move back and forth.
+function xSwitch(enemyX) {
+	
+}
+
+function ySwitch(enemyY) {
+}
+
+//If the player is caught by an enemy, they lose.
+function youreCaught(player) {
+}
+
+//If the player reaches the portal/exit, then they win the game.
+function winning(player) {
+}
+
+//Resets the game if the player loses or wins.
+function restart() {
+}
+
+
+function render () {
+
+    // game.debug.text(game.time.physicsElapsed, 32, 32);
+    // game.debug.body(player);
+     //game.debug.bodyInfo(player, 16, 24);
+
+}
+
+//create them as two separate groups, have a function create them ussing a switch
+//	statement/while loop that counts how many times the function is called.
 
