@@ -7,6 +7,7 @@ function preload() {
 	game.load.image('player', 'assets/images/invader.png');
 	game.load.image('portal', 'assets/images/Exit.png');
 	game.load.image('bg','assets/images/levelBack.png');
+	game.load.image('end','assets/images/end.png');
 }
 
 var map;
@@ -19,6 +20,7 @@ var enemyY;
 var enex;
 var eney;
 var portal;
+var end;
 
 function create() {
 	game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -287,6 +289,15 @@ function youreCaught(player) {
 
 //If the player reaches the portal/exit, then they win the game.
 function winning(player) {
+	
+	stateText = game.add.text(player.x,player.y,' ', { font: '20px Arial', fill: '#fff' });
+        stateText.anchor.setTo(0.5, 0.5);
+	stateText.text="You made it!";
+        stateText.visible = true;
+
+        //the "click to restart" handler
+        game.input.onTap.addOnce(restart,this);
+	restart();
 }
 
 //Resets the game if the player loses or wins.
