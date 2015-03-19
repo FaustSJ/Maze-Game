@@ -54,7 +54,7 @@ function create() {
 	player = game.add.sprite(333, 48, 'player');
 	game.physics.arcade.enable(player);
 	//the camera will follow the player in the world
-	game.camera.follow(portal);
+	game.camera.follow(player);
 	player.body.bounce.set(1);
 	//move player with cursor keys
 	cursors = game.input.keyboard.createCursorKeys();
