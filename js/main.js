@@ -21,6 +21,7 @@ var enex;
 var eney;
 var portal;
 var end;
+var stateText;
 
 function create() {
 	game.physics.startSystem(Phaser.Physics.ARCADE);
